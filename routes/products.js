@@ -1,15 +1,46 @@
 const express = require('express');
 const router = express.Router();
-const Product = require('../controllers/products.js');
+const mongoose = require('mongoose');
+const Product = mongoose.model('Product');
 
-router.get('/', Product.listAll);
+// Get all products
+router.get('/', async (req, res) => {
+  try{
+    const products = await Product.find(req.query);
 
-router.get('/:id', Product.listOne);
+    if(!products.length){
+      res.status(404).json({error: 'Resource not found'});
+    }else{
+      res.status(200).json(products);
+    }
+  }catch(error){
+    res.status(500).json(error);
+  }
+});
 
-router.post('/', Product.create);
+// Get one product by id
+router.get('/:slug', async (req, res) => {
+  try{
+    const product = await Product.findOne({title: req.params.slug});
 
-router.put('/', Product.update);
+    if(!product){
+      res.status(404).json({error: 'Resource not found'});
+    }else{
+    res.status(200).json(product);
+    }
+  }catch(error){
+    res.status(500).json(error);
+  }
+});
 
-router.delete('/:id', Product.delete);
+// * Admin * Create product
+router.post('/', async (req, res) => {
+	try{
+    const newProduct = await Product.create(req.body);
+		res.status(200).json(newProduct);
+	}catch(error){
+		res.status(500).json(error);
+	}
+});
 
-module.exports = Router;
+module.exports = router;
