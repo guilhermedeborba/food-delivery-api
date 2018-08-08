@@ -18,41 +18,41 @@ const CustomerSchema = new Schema({
 }, { timestamps: true });
 
 
-// the unique validator will check for duplicate database entries 
+// Look for duplicate entries 
 // and report them like any other validation error
 CustomerSchema.plugin(uniqueValidator, { message: 'You are already registered.' });
 
-// Hashing password
-CustomerSchema.pre('save', function(next){
+// Hash the password before save
+CustomerSchema.pre('save', () => {
   this.salt = crypto.randomBytes(16).toString('hex');
   this.password = crypto.pbkdf2Sync(this.password, this.salt, 10000, 512, 'sha512').toString('hex');
-  next();
-});
+})
 
 
-// Customer Methods
+/* 
+    Customer Methods
+*/
 
 CustomerSchema.methods.toProfileJSONFor = function(){
 	return {
     address: this.address,
     firstName: this.firstName,
+    lastName: this.lastName,
     email: this.email,
   }
 };
 
-// Validate the password
-CustomerSchema.methods.validPassword = function(input){
-  const hashedInput = crypto.pbkdf2Sync(input, this.salt, 10000, 512, 'sha512').toString('hex');
-  return this.password === hashedInput;
+CustomerSchema.methods.validatePassword = function(password){
+  const hashedPassword = crypto.pbkdf2Sync(password, this.salt, 10000, 512, 'sha512').toString('hex');
+  return this.password === hashedPassword;
 };
 
-
 CustomerSchema.methods.generateJWT = function(){
-  jwt.sign({
+  return jwt.sign({
     id: this._id,
     email: this.email,
     expiresIn: '1h', 
-  });
+  }, process.env.JWT_SECRET);
 };
 
 CustomerSchema.methods.toAuthJSON = function(){

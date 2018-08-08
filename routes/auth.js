@@ -3,16 +3,16 @@ const jwt = require('express-jwt');
 const auth = {
   required: jwt({
     secret: process.env.JWT_SECRET,
-    customerProperty: 'payload',
+    requestProperty: 'payload',
     getToken: getTokenFromHeader
   }),
   optional: jwt({
     secret: process.env.JWT_SECRET,
-    customerProperty: 'payload',
+    requestProperty: 'payload',
     credentialsRequired: false,
     getToken: getTokenFromHeader
   }) 
-};
+}
 
 function getTokenFromHeader(req){
   if (req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer')

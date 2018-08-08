@@ -6,14 +6,13 @@ const ProductSchema = new Schema({
   type: { type: String, required: true },
   basePrice: { type: Number, required: true },
   image: [ { type: String } ],
-  //  
+  /*
+        Variants are selectable fields about the product.
+  */
   variants: [ { type: Object, required: true } ],
-  status: { type: String, required: true, enum: ['available','unavailable'], default: 'available' },
-  expiryDate: { type: Date, required: false},
+  status: { type: String, required: true , enum: ['available','unavailable'] },
+  expiryDate: { type: Date, required: false },
 }, { timestamps: true });
-
-
-// Product Methods
 
 ProductSchema.methods.isExpired  = function(){
   if(this.createdAt >= this.expiryDate)
