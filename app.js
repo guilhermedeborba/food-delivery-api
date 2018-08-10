@@ -14,10 +14,9 @@ app.use(bodyParser.json());
 require('./config/mongodb.js');
 
 // Models
-require('./models/order.js');
-require('./models/orderItem.js');
-require('./models/customer.js');
 require('./models/product.js');
+require('./models/customer.js');
+require('./models/order.js');
 
 // Passport
 require('./config/passport.js');
