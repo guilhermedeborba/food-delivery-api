@@ -1,12 +1,34 @@
 const mongoose = require('mongoose');
-const orderItem = mongoose.model('orderItem');
 const Schema = mongoose.Schema;
+const Product = mongoose.model('Product');
 const ObjectId = Schema.Types.ObjectId;
+
+const productVariantSchema = new Schema({
+  productId: { type: ObjectId, ref: 'Product' },
+});
+
+const orderItemSchema = new Schema({
+  productId: { type: ObjectId, ref: 'Product' },
+  title: { type: String, required: true },
+  price: { type: Number, required: true },
+  variants: [
+    { type: productVariantSchema, required: false }
+  ],
+});
+
+// Set order Item price
+orderItemSchema.pre('save', async () => {
+  const product = await Product.findById({id: this.productId});
+  this.price = product.price;
+});
 
 const OrderSchema = new Schema({
   customerId: { type: ObjectId, ref: 'Customer', required: false},
   status: { type: String, enum: ['pending', 'delivered'], required: true},
   totalPrice: { type: Number, required: true },
+  items: [ 
+    { type: orderItemSchema, required: true }
+  ],
   shippingPrice: { type: Number, required: true },
   shippingAdress: { 
     city: { type: String, required: true },
@@ -15,11 +37,12 @@ const OrderSchema = new Schema({
   },
 }, { timestamps: true });
 
+// Set order total price
 OrderSchema.pre('save', async () => {
   const items = await orderItem.find({orderId: this.id});
 
   this.totalPrice = items.map(item => item.price)
-                         .reduce((itemPrice, totalPrice) => totalPrice + itemPrice, 0);
+  .reduce((itemPrice, totalPrice) => totalPrice + itemPrice, 0); 
 });
 
 module.exports = mongoose.model('Order', OrderSchema);
