@@ -21,10 +21,11 @@ const CustomerSchema = new Schema({
 CustomerSchema.plugin(uniqueValidator, { message: 'You are already registered.' });
 
 // Hash the password before save
-CustomerSchema.pre('save', () => {
+CustomerSchema.pre('save', function(next){
   this.salt = crypto.randomBytes(16).toString('hex');
   this.password = crypto.pbkdf2Sync(this.password, this.salt, 10000, 512, 'sha512').toString('hex');
-})
+  next(); 
+});
 
 /* 
     Customer Methods

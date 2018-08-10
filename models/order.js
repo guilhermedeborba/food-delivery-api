@@ -17,9 +17,9 @@ const orderItemSchema = new Schema({
 });
 
 // Set order Item price
-orderItemSchema.pre('save', async () => {
+orderItemSchema.pre('save', async function(){
   const product = await Product.findById({id: this.productId});
-  this.price = product.price;
+  this.price = product.basePrice;
 });
 
 const OrderSchema = new Schema({
@@ -38,7 +38,7 @@ const OrderSchema = new Schema({
 }, { timestamps: true });
 
 // Set order total price
-OrderSchema.pre('save', async () => {
+OrderSchema.pre('save', async function(){
   const items = await orderItem.find({orderId: this.id});
 
   this.totalPrice = items.map(item => item.price)

@@ -57,6 +57,16 @@ router.get('/orders', auth.required, async (req, res) => {
   }
 });
 
+// Post a customer's orders
+router.get('/orders', auth.required, async (req, res) => {
+  try{
+    const order = await Order.create(req.body);
+    res.status(200).json(order);
+  }catch(error){
+    res.status(500).json(error);
+  }
+});
+
 // Update a customer
 router.put('/', auth.required, async (req, res) => {
   try{
