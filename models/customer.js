@@ -5,9 +5,8 @@ const uniqueValidator = require('mongoose-unique-validator');
 const Schema = mongoose.Schema;
 
 const CustomerSchema = new Schema({
-	firstName: { type: String, required: true },
-	lastName: { type: String, required: true },
-	email: { type: String, required: true },
+	name: { type: String, required: true },
+	email: { type: String, required: true, unique: true },
   address: {
     city: { type: String, required: true },
     state: { type: String, required: true },
@@ -16,7 +15,6 @@ const CustomerSchema = new Schema({
   password: { type: String },
   salt: { type: String },
 }, { timestamps: true });
-
 
 // Look for duplicate entries 
 // and report them like any other validation error
@@ -28,7 +26,6 @@ CustomerSchema.pre('save', () => {
   this.password = crypto.pbkdf2Sync(this.password, this.salt, 10000, 512, 'sha512').toString('hex');
 })
 
-
 /* 
     Customer Methods
 */
@@ -36,8 +33,7 @@ CustomerSchema.pre('save', () => {
 CustomerSchema.methods.toProfileJSONFor = function(){
 	return {
     address: this.address,
-    firstName: this.firstName,
-    lastName: this.lastName,
+    name: this.name,
     email: this.email,
   }
 };
