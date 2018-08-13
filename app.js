@@ -25,8 +25,4 @@ require('passport');
 // Routes
 app.use('/api/v1', require('./routes'));
 
-
-// const productsRouter = require('./src/routes/products.js');
-// app.use('/api/products/', productsRouter);
-
 app.listen(process.env.APP_PORT);
