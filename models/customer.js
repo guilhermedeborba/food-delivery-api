@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken');
 const uniqueValidator = require('mongoose-unique-validator');
 const Schema = mongoose.Schema;
 
+// Customer Schema
 const CustomerSchema = new Schema({
 	name: { type: String, required: true },
 	email: { type: String, required: true, unique: true },

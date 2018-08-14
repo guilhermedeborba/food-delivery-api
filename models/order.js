@@ -3,21 +3,24 @@ const Schema = mongoose.Schema;
 const Product = mongoose.model('Product');
 const ObjectId = Schema.Types.ObjectId;
 
+// Order Item Schema
 const orderItemSchema = new Schema({
   productId: { type: ObjectId, ref: 'Product' },
-  title: { type: String, required: true },
-  price: { type: Number, required: true },
+  title: { type: String },
+  price: { type: Number },
   variants: [
     { type: Object, required: false }
   ],
 }, { _id: false });
 
-// Set order Item price
+// Set Order Item price before save
 orderItemSchema.pre('save', async function(){
   const product = await Product.findById({_id: this.productId});
   this.price = product.basePrice;
+  this.title = product.title;
 });
 
+// Order Schema
 const OrderSchema = new Schema({
   customerId: { type: ObjectId, ref: 'Customer', required: false},
   status: { type: String, enum: ['pending', 'delivered'], required: true},
@@ -33,7 +36,7 @@ const OrderSchema = new Schema({
   },
 }, { timestamps: true });
 
-// Set order total price
+// Set Order totalPrice before save
 OrderSchema.pre('save', async function(){
   this.totalPrice = this.items.map(item => item.price)
   .reduce((itemPrice, totalPrice) => totalPrice + itemPrice, 0); 

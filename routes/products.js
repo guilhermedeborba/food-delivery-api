@@ -3,7 +3,11 @@ const router = express.Router();
 const mongoose = require('mongoose');
 const Product = mongoose.model('Product');
 
-// Get all products
+/* 
+  @route  POST api/v1/products
+  @desc   List Products
+  @access Public
+*/
 router.get('/', async (req, res) => {
   try{
     const products = await Product.find(req.query);
@@ -18,7 +22,11 @@ router.get('/', async (req, res) => {
   }
 });
 
-// Get one product by id
+/* 
+  @route  POST api/v1/customers
+  @desc   List one Product by slug
+  @access Public
+*/
 router.get('/:slug', async (req, res) => {
   try{
     const product = await Product.findOne({title: req.params.slug});

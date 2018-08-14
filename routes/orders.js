@@ -2,7 +2,11 @@ const router = require('express').Router();
 const mongoose = require('mongoose');
 const Order = mongoose.model('Order');
 
-// Guest posting route
+/* 
+  @route  POST api/v1/orders
+  @desc   Create an Order
+  @access Public
+*/
 router.post('/orders/',  async (req, res) => {
   try{
     const order = await Order.create(req.body);

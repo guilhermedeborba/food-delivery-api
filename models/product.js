@@ -13,4 +13,4 @@ const ProductSchema = new Schema({
 }, { timestamps: true });
 
 
-module.export = mongoose.model('Product', ProductSchema);
+module.exports = mongoose.model('Product', ProductSchema);

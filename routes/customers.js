@@ -5,7 +5,11 @@ const Order = mongoose.model('Order');
 const auth = require('./auth.js');
 const passport = require('passport');
 
-// Create a new customer
+/* 
+  @route  POST api/v1/customers
+  @desc   Create a new customer
+  @access Public
+*/
 router.post('/', async (req, res) => {
 	try{
     const newCustomer = await Customer.create(req.body);
@@ -15,7 +19,11 @@ router.post('/', async (req, res) => {
 	}
 });
 
-// Auth an user and Generates a token for access
+/* 
+  @route  POST api/v1/customers/auth
+  @desc   Auth customer and generates token
+  @access Private
+*/
 router.post('/auth', (req, res, next) => {
   if(!req.body.email){
     return res.status(422).json({errors: {email: 'cant be blank'}});
@@ -37,8 +45,12 @@ router.post('/auth', (req, res, next) => {
   })(req, res, next);
 });
 
-// List one customer
-router.get('/', auth.required, async (req, res) => {
+/* 
+  @route  GET api/v1/customers
+  @desc   List the Customer authed
+  @access Private
+*/
+router.get('/', auth, async (req, res) => {
   try{
     const customer = await Customer.findById(req.payload.id);
 	  res.status(200).json(customer.toProfileJSONFor());
@@ -47,8 +59,12 @@ router.get('/', auth.required, async (req, res) => {
   }
 });
 
-// List a customer's orders
-router.get('/orders', auth.required, async (req, res) => {
+/* 
+  @route  POST api/v1/customers/orders
+  @desc   List customer's orders
+  @access Private
+*/
+router.get('/orders', auth, async (req, res) => {
   try{
     const orders = await Order.find({customerId:req.payload.id, status: req.query.status});
     res.status(200).json(orders);
@@ -57,8 +73,12 @@ router.get('/orders', auth.required, async (req, res) => {
   }
 });
 
-// Post a customer's orders
-router.post('/orders', auth.required, async (req, res) => {
+/* 
+  @route  POST api/v1/customers/orders
+  @desc   Create a new Order
+  @access Private
+*/
+router.post('/orders', auth, async (req, res) => {
   try{
     const order = await Order.create({customerId:req.payload.id, ...req.body});
     res.status(200).json(order);
@@ -67,8 +87,12 @@ router.post('/orders', auth.required, async (req, res) => {
   }
 });
 
-// Update a customer
-router.put('/', auth.required, async (req, res) => {
+/* 
+  @route  PUT api/v1/customers
+  @desc   Update a Customer
+  @access Private
+*/
+router.put('/', auth, async (req, res) => {
   try{
     const customerChanged = await Customer.update(req.payload.id, req.body);
 	  res.status(200).json(customerChanged);
