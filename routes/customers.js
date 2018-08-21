@@ -2,8 +2,9 @@ const router = require('express').Router();
 const mongoose = require('mongoose');
 const Customer = mongoose.model('Customer');
 const Order = mongoose.model('Order');
-const auth = require('./auth.js');
+const auth = require('./auth.js')
 const passport = require('passport');
+
 
 /* 
   @route  POST api/v1/customers

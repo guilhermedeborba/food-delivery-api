@@ -11,12 +11,15 @@ const options = {
 passport.use(new LocalStrategy(options, async (email, password, done) => {
   try{
     const customer = await Customer.findOne({email: email});
-    if(!customer) 
-      return done(null, false);
-
-    if(!customer.validatePassword(password)) 
-      return done(null, false);
     
+    if(!customer){
+      return done(null, false);
+    }
+
+    if(!customer.validatePassword(password)){ 
+      return done(null, false);
+    }
+
     return done(null, customer);
 
   }catch(error){

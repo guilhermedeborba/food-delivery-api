@@ -1,17 +1,19 @@
-const jwt = require('express-jwt');
+const expressJwt = require('express-jwt');
 
-const auth = jwt({
-    secret: process.env.JWT_SECRET,
-    requestProperty: 'payload',
-    getToken: getTokenFromHeader
+const auth = expressJwt({
+  secret: process.env.JWT_SECRET,
+  requestProperty: 'payload',
 });
 
-
-function getTokenFromHeader(req){
-  if (req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer'){
-      return req.headers.authorization.split(' ')[1];
+function errorHandler(err, req, res, next){
+  if(err.name === 'UnauthorizedError'){
+    res.status(401).json(err.inner);
+  }else{
+    next();
   }
-  return null;
 }
 
-module.exports = auth;
+module.exports = [
+  auth, 
+  errorHandler
+];

@@ -9,7 +9,7 @@ const orderItemSchema = new Schema({
   title: { type: String },
   price: { type: Number },
   variants: [
-    { type: Object, required: false }
+    { type: Object }
   ],
 }, { _id: false });
 
