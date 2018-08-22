@@ -8,10 +8,22 @@ const orderItemSchema = new Schema({
   productId: { type: ObjectId, ref: 'Product' },
   title: { type: String },
   price: { type: Number },
-  variants: [
-    { type: Object }
-  ],
+  variants: { type: Object },
+  additionals: { type: Object }
 }, { _id: false });
+
+// Validate variants path
+orderItemSchema.path('variants').validate( async function(variants){
+  
+  const product = await Product.find({ _id: this.productId });
+
+  for(const key in variants){
+    if(product.variants[key]){
+      
+    }
+  }
+
+}, 'Invalid variant option.');
 
 // Set Order Item price before save
 orderItemSchema.pre('save', async function(){

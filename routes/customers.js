@@ -5,7 +5,6 @@ const Order = mongoose.model('Order');
 const auth = require('./auth.js')
 const passport = require('passport');
 
-
 /* 
   @route  POST api/v1/customers
   @desc   Create a new customer
@@ -16,7 +15,7 @@ router.post('/', async (req, res) => {
     const newCustomer = await Customer.create(req.body);
 		res.status(200).json(newCustomer);
 	}catch(error){
-		res.status(500).json(error);
+		res.status(500).json(errors);
 	}
 });
 
