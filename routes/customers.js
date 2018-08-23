@@ -5,6 +5,12 @@ const Order = mongoose.model('Order');
 const auth = require('./auth.js')
 const passport = require('passport');
 
+
+router.get('/test', (req, res) => {
+  res.status(200).json(req.payload);
+});
+
+
 /* 
   @route  POST api/v1/customers
   @desc   Create a new customer
