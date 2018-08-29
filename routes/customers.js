@@ -5,12 +5,6 @@ const Order = mongoose.model('Order');
 const auth = require('./auth.js')
 const passport = require('passport');
 
-
-router.get('/test', (req, res) => {
-  res.status(200).json(req.payload);
-});
-
-
 /* 
   @route  POST api/v1/customers
   @desc   Create a new customer
@@ -53,7 +47,7 @@ router.post('/auth', (req, res, next) => {
 
 /* 
   @route  GET api/v1/customers
-  @desc   List the Customer authed
+  @desc   Auth customer and list it
   @access Private
 */
 router.get('/', auth, async (req, res) => {
@@ -92,6 +86,8 @@ router.post('/orders', auth, async (req, res) => {
     res.status(500).json(error);
   }
 });
+
+
 
 /* 
   @route  PUT api/v1/customers
