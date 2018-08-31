@@ -11,14 +11,14 @@
  */
 
 function findByIdCached(redis, model, _id, callback) {
-  redis.get(_id, (error, reply) => {
+  redis.get(_id.toString(), (error, reply) => {
     if (error) {
       callback(error, null);
     }
     else if (reply) {
       // Document is already cached
       try {
-        callback(JSON.parse(reply));
+        callback(null, JSON.parse(reply));
       } catch (error) {
         callback(error, null);
       }
@@ -34,7 +34,7 @@ function findByIdCached(redis, model, _id, callback) {
           and return to the client
         */
         try {
-          redis.set(_id, JSON.stringify(doc), () => {
+          redis.set(_id.toString(), JSON.stringify(doc), () => {
             callback(null, doc);
           });
         } catch (error) {

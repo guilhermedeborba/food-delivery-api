@@ -5,4 +5,6 @@ client.on('error', error => {
   console.log(`Error: ${error}`);
 })
 
+client.on('connect', () => console.log('Redis Connected'));
+
 module.exports = client;

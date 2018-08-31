@@ -34,16 +34,14 @@ const OrderSchema = new Schema({
   },
 }, { timestamps: true });
 
-OrderSchema.pre('save', async function () {
+OrderSchema.pre('save', async function (next) {
   try {
     // Get all product items schema
-    const productsSchema = await this.getOrderItemsSchema();
+    const productsSchemas = await this.getOrderItemsSchemas();
 
-    // Validating
     // Pricing
-
   } catch (error) {
-    console.log(error);
+    next(error);
   }
 });
 
@@ -52,29 +50,53 @@ OrderSchema.pre('save', async function () {
   insert them in array, then look for each 
   product by Id in cache or in the main db.
 */
-OrderSchema.methods.getOrderItemsSchema = function () {
+OrderSchema.methods.getOrderItemsSchemas = function () {
   const items = this.items;
   let productIds = [];
 
-  // Look for different productIds and include them
   items.forEach(item => {
-    // Include ObjectId if it is not in array yet
-    if (!productIds.include(item.productId)) {
-      productIds.push(item.productId);
+    //Include ObjectId String if it is not in array yet
+    if (!productIds.includes(item.productId.toString())) {
+      productIds.push(item.productId.toString());
     }
   });
 
   // For each productId find in cache or db
   return Promise.all(productIds.map(id => {
-    new Promise((resolve, reject) => {
+    return new Promise((resolve, reject) => {
       findByIdCached(redisClient, Product, id, (error, product) => {
-        if(error) reject(error);
-        else{
+        if (error) {
+          reject(error);
+        }
+        else {
           resolve(product);
         }
       });
     });
-  }))
+  }));
+}
+
+
+/**
+ * @param {orderItemSchema}
+ * @param {Array} productsSchemas 
+ */
+function validateVariants({ variants, productId }, productsSchemas) {
+  // Validate Type
+  if (!Array.isArray(variants)) {
+    throw new Error('Variants key must be an array of objects');
+  }
+
+  const productSchema = productsSchemas.find(productSchema => productSchema.id === productId);
+
+  if (variants.length > productSchema.variants.length) {
+    throw new Error('Variants options must be lower or equal product variants.');
+  }
+
+}
+
+function calculateAditionals() {
+
 }
 
 module.exports = mongoose.model('Order', OrderSchema);
