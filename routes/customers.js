@@ -87,8 +87,6 @@ router.post('/orders', auth, async (req, res) => {
   }
 });
 
-
-
 /* 
   @route  PUT api/v1/customers
   @desc   Update a Customer

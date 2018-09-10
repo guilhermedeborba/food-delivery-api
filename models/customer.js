@@ -8,11 +8,6 @@ const Schema = mongoose.Schema;
 const CustomerSchema = new Schema({
 	name: { type: String, required: true },
 	email: { type: String, required: true, unique: true },
-  address: {
-    city: { type: String, required: true },
-    state: { type: String, required: true },
-    zip: { type: Number, required: true },
-  },
   password: { type: String },
   salt: { type: String },
 }, { timestamps: true });

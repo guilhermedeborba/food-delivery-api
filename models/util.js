@@ -1,8 +1,8 @@
 /**
- *  @desc  Look for document by ObjectId,
- *         return immediately if it is found in cache,
- *         else query the main db, save to cache 
- *         and then return to client.
+ *  Look for document by ObjectId,
+ *  return immediately if it is found in cache,
+ *  else query the main db, save to cache 
+ *  and then return to client.
  *         
  *  @param {RedisClient} redis
  *  @param {Mongoose.Schema} model
@@ -47,4 +47,14 @@ function findByIdCached(redis, model, _id, callback) {
   });
 }
 
-module.exports = findByIdCached;
+/** 
+ *  Filter and return an array of unique values
+ * 
+ *  @param {array} array 
+ *  @returns array
+ */
+function uniqueValues(array) {
+  return array.filter((elem, index, self) => self.indexOf(elem) == index);
+}
+
+module.exports = { findByIdCached, uniqueValue };

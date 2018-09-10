@@ -6,8 +6,8 @@ const Product = mongoose.model('Product');
 // Redis client
 const redisClient = require('../config/redis.js');
 
-// Util function
-const findByIdCached = require('./util.js');
+// Util functions
+const Util = require('./util.js');
 
 // Order Item Schema
 const orderItemSchema = new Schema({
@@ -45,26 +45,16 @@ OrderSchema.pre('save', async function (next) {
   }
 });
 
-/*
-  Look for each item productId and 
-  insert them in array, then look for each 
-  product by Id in cache or in the main db.
-*/
+//Look for each product by Id in cache or in the main db
 OrderSchema.methods.getOrderItemsSchemas = function () {
-  const items = this.items;
-  let productIds = [];
 
-  items.forEach(item => {
-    //Include ObjectId String if it is not in array yet
-    if (!productIds.includes(item.productId.toString())) {
-      productIds.push(item.productId.toString());
-    }
-  });
+  // Filter and return an array of unique values
+  const productIds = Util.uniqueValues(this.items);
 
   // For each productId find in cache or db
   return Promise.all(productIds.map(id => {
     return new Promise((resolve, reject) => {
-      findByIdCached(redisClient, Product, id, (error, product) => {
+      Util.findByIdCached(redisClient, Product, id, (error, product) => {
         if (error) {
           reject(error);
         }
