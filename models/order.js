@@ -1,3 +1,4 @@
+const { promisify } = require('util');
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const ObjectId = Schema.Types.ObjectId;
@@ -8,6 +9,7 @@ const redisClient = require('../config/redis.js');
 
 // Util functions
 const Util = require('./util.js');
+Util.findByIdCached = promisify(Util.findByIdCached);
 
 // Order Item Schema
 const orderItemSchema = new Schema({
@@ -53,19 +55,9 @@ OrderSchema.methods.getOrderItemsSchemas = function () {
 
   // For each productId find in cache or db
   return Promise.all(productIds.map(id => {
-    return new Promise((resolve, reject) => {
-      Util.findByIdCached(redisClient, Product, id, (error, product) => {
-        if (error) {
-          reject(error);
-        }
-        else {
-          resolve(product);
-        }
-      });
-    });
+    Util.findByIdCached(redisClient, Product, id);
   }));
 }
-
 
 /**
  * @param {orderItemSchema}

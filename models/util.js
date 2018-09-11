@@ -1,26 +1,23 @@
 /**
- *  Look for document by ObjectId,
- *  return immediately if it is found in cache,
- *  else query the main db, save to cache 
- *  and then return to client.
+ *  Look for document by ObjectId, return immediately if it is found in cache, 
+ *  else query the main db, save to cache and then return to client.
  *         
  *  @param {RedisClient} redis
  *  @param {Mongoose.Schema} model
  *  @param {ObjectId} _id 
  *  @param {function} callback
  */
-
 function findByIdCached(redis, model, _id, callback) {
   redis.get(_id.toString(), (error, reply) => {
     if (error) {
-      callback(error, null);
+      return callback(error, null);
     }
     else if (reply) {
       // Document is already cached
       try {
-        callback(null, JSON.parse(reply));
+        return callback(null, JSON.parse(reply));
       } catch (error) {
-        callback(error, null);
+        return callback(error, null);
       }
     }
     else {
@@ -35,13 +32,13 @@ function findByIdCached(redis, model, _id, callback) {
         */
         try {
           redis.set(_id.toString(), JSON.stringify(doc), () => {
-            callback(null, doc);
+            return callback(null, doc);
           });
         } catch (error) {
-          callback(error, null);
+          return callback(error, null);
         }
       }).catch(error => {
-        callback(error, null);
+        return callback(error, null);
       });
     }
   });
@@ -51,10 +48,10 @@ function findByIdCached(redis, model, _id, callback) {
  *  Filter and return an array of unique values
  * 
  *  @param {array} array 
- *  @returns array
+ *  @return array
  */
 function uniqueValues(array) {
   return array.filter((elem, index, self) => self.indexOf(elem) == index);
 }
 
-module.exports = { findByIdCached, uniqueValue };
+module.exports = { findByIdCached, uniqueValues };
