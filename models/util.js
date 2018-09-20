@@ -1,4 +1,22 @@
 /**
+ * @param {orderItemSchema}
+ * @param {Array} productsSchemas 
+ */
+// Validate Type
+function validateVariants({ variants, productId }, productsSchemas) {
+if (!Array.isArray(variants)) {
+    throw new Error('Variants key must be an array of objects');
+  }
+  
+  const productSchema = productsSchemas.find(productSchema => productSchema.id === productId);
+
+  if (variants.length > productSchema.variants.length) {
+    throw new Error('Variants options must be lower or equal product variants.');
+  }
+
+}
+
+/**
  *  Look for document by ObjectId, return immediately if it is found in cache, 
  *  else query the main db, save to cache and then return to client.
  *         
@@ -44,7 +62,8 @@ function findByIdCached(redis, model, _id, callback) {
   });
 }
 
-/** 
+
+/**
  *  Filter and return an array of unique values
  * 
  *  @param {array} array 
@@ -54,4 +73,4 @@ function uniqueValues(array) {
   return array.filter((elem, index, self) => self.indexOf(elem) == index);
 }
 
-module.exports = { findByIdCached, uniqueValues };
+module.exports = { validateVariants, findByIdCached, calculateAditionals, uniqueValues };

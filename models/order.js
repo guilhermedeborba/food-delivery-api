@@ -7,7 +7,7 @@ const Product = mongoose.model('Product');
 // Redis client
 const redisClient = require('../config/redis.js');
 
-// Util functions
+// Util function
 const Util = require('./util.js');
 Util.findByIdCached = promisify(Util.findByIdCached);
 
@@ -53,32 +53,11 @@ OrderSchema.methods.getOrderItemsSchemas = function () {
   // Filter and return an array of unique values
   const productIds = Util.uniqueValues(this.items);
 
-  // For each productId find in cache or db
+  // Find each product Schema in cache or db
   return Promise.all(productIds.map(id => {
-    Util.findByIdCached(redisClient, Product, id);
+    return Util.findByIdCached(redisClient, Product, id);
   }));
 }
 
-/**
- * @param {orderItemSchema}
- * @param {Array} productsSchemas 
- */
-function validateVariants({ variants, productId }, productsSchemas) {
-  // Validate Type
-  if (!Array.isArray(variants)) {
-    throw new Error('Variants key must be an array of objects');
-  }
-
-  const productSchema = productsSchemas.find(productSchema => productSchema.id === productId);
-
-  if (variants.length > productSchema.variants.length) {
-    throw new Error('Variants options must be lower or equal product variants.');
-  }
-
-}
-
-function calculateAditionals() {
-
-}
 
 module.exports = mongoose.model('Order', OrderSchema);
