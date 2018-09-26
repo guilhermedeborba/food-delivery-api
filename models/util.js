@@ -1,24 +1,66 @@
 /**
+ * Validate product variants using its original schema
+ * 
  * @param {orderItemSchema}
  * @param {Array} productsSchemas 
  */
-// Validate Type
 function validateVariants({ variants, productId }, productsSchemas) {
-if (!Array.isArray(variants)) {
-    throw new Error('Variants key must be an array of objects');
+  const productSchema = productsSchemas.find(productSchema => productSchema.id === productId);
+ 
+  if (!isObject(variants)) {
+    throw new Error('Variants must be an object.');
   }
   
-  const productSchema = productsSchemas.find(productSchema => productSchema.id === productId);
-
-  if (variants.length > productSchema.variants.length) {
+  if (objectLen(variants) > objectLen(productSchema.variants)) {
     throw new Error('Variants options must be lower or equal product variants.');
   }
 
+  for (const key in variants) {
+    if (!productSchema.variants.hasOwnProperty(key)) {
+      throw new Error(`Key: ${key}, is not valid.`);
+    }
+    else if (!productSchema.variants[key].includes(variants[key])) {
+      throw new Error(`Option: ${variants[key]} is not valid.`);
+    }
+  }
+}
+
+/**
+ * Test if a value is an object
+ * 
+ * @param {*} val 
+ */
+function isObject(val) {
+  return typeof val === 'object';
+}
+
+/**
+ * Return an object's length
+ * 
+ * @param {*} obj 
+ */
+function objectLen(obj) {
+  return Object.keys(obj).length;
+}
+
+/**
+ * Verify and calculate additionals and return the sum
+ * 
+ * @param {orderItemSchema} 
+ * @param {Array} productsSchemas 
+ */
+function calculateAditionals({ additonals, productId }, productsSchemas) {
+  const productSchema = productsSchemas.find(productSchema => productSchema.id === productId);
+
+  // *WHY ARRAY IF IT IS OBJECT
+  if (additonals.length > productSchema.additonals.length) {
+    throw new Error('Variants options must be lower or equal product variants.');
+  }
 }
 
 /**
  *  Look for document by ObjectId, return immediately if it is found in cache, 
- *  else query the main db, save to cache and then return to client.
+ *  else query the main db, save to cache and then return to client
  *         
  *  @param {RedisClient} redis
  *  @param {Mongoose.Schema} model
@@ -61,7 +103,6 @@ function findByIdCached(redis, model, _id, callback) {
     }
   });
 }
-
 
 /**
  *  Filter and return an array of unique values
